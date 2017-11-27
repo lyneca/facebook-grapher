@@ -41,14 +41,12 @@ other_times = [datetime.fromtimestamp(int(x)/1000) for x in other_times]
 you_times = [datetime.fromtimestamp(int(x)/1000) for x in you_times]
 
 print("Sorting...")
-days = sorted(list(set(["{}-{}-{}".format(x.year, x.month, x.month) for x in other_times + you_times])))
+days = sorted(list(set(["{}-{}".format(x.year, x.month) for x in other_times + you_times])), key=lambda x: [int(y) for y in x.split('-')])
 
-_other_days = ["{}-{}-{}".format(x.year, x.month, x.month) for x in other_times]
-other_days = sorted(list(set(_other_days)))
+_other_days = ["{}-{}".format(x.year, x.month) for x in other_times]
 other_counts = [_other_days.count(x) for x in days]
 
-_you_days = ["{}-{}-{}".format(x.year, x.month, x.month) for x in you_times]
-you_days = sorted(list(set(_you_days)))
+_you_days = ["{}-{}".format(x.year, x.month) for x in you_times]
 you_counts = [_you_days.count(x) for x in days]
 
 width = 0.35
@@ -60,7 +58,7 @@ ax.bar(ind, you_counts, width, label=your_name)
 ax.bar(ind+width, other_counts, width, label=their_name)
 #  ax.plot(you_counts, label=your_name)
 #  ax.plot(other_counts, label=their_name)
-ax.set_title("Messages Sent By Day")
+ax.set_title("Messages Sent By Month")
 ax.set_ylabel("Messages Sent")
 ax.set_xlabel("Date")
 space = 2
@@ -68,7 +66,7 @@ ax.set_xticks([x*(len(days)//10) for x in range(10)])
 ax.set_xticklabels(days[::len(days)//10] + [days[-1]])
 ax.legend()
 print("Saving...")
-name = your_name + '_' + their_name + '.png'
+name = your_name + '_' + their_name + '_monthly' + '.png'
 fig.savefig(name)
 print("Done. Saved to '{}'".format(name))
 #  plt.show()

@@ -1,14 +1,11 @@
-import numpy as np
+from datetime import datetime
 import matplotlib.pyplot as plt
+import numpy as np
+import requests
+import uncurl
 import json
 import math
 import re
-import uncurl
-import requests
-from datetime import datetime
-
-your_id = '100009563164658'
-end = '{\n   '
 
 print("1. Go to messenger.com and to the conversation you want to graph.")
 print("2. Press F12 and go to the network tab.")
@@ -29,16 +26,17 @@ r = eval(uncurl.parse(curl))
 
 print("Decoding and extracting...")
 x = r.content.decode('U8')
-j = json.loads(x[:x.index(end) - 1])
+j = json.loads(x[:x.index('{\n   ') - 1])
+other_id = j['o0']['data']['message_thread']['thread_key']['other_user_id']
 j = j['o0']['data']['message_thread']
 messages = j['messages']['nodes']
 
-other = [x for x in messages if x['message_sender']['id'] != your_id]
-you = [x for x in messages if x['message_sender']['id'] == your_id]
+other = [x for x in messages if x['message_sender']['id'] == other_id]
+you   = [x for x in messages if x['message_sender']['id'] != other_id]
 other_times = [x['timestamp_precise'] for x in other]
-you_times = [x['timestamp_precise'] for x in you]
+you_times   = [x['timestamp_precise'] for x in you]
 other_times = [datetime.fromtimestamp(int(x)/1000) for x in other_times]
-you_times = [datetime.fromtimestamp(int(x)/1000) for x in you_times]
+you_times   = [datetime.fromtimestamp(int(x)/1000) for x in you_times]
 
 print("Sorting...")
 days = sorted(list(set(["{}-{}".format(x.year, x.month) for x in other_times + you_times])), key=lambda x: [int(y) for y in x.split('-')])
@@ -61,9 +59,10 @@ ax.bar(ind+width, other_counts, width, label=their_name)
 ax.set_title("Messages Sent By Month")
 ax.set_ylabel("Messages Sent")
 ax.set_xlabel("Date")
-space = 2
-ax.set_xticks([x*(len(days)//10) for x in range(10)])
-ax.set_xticklabels(days[::len(days)//10] + [days[-1]])
+if len(days) < 10: divisor = 1
+else: divisor = len(days) // 10
+ax.set_xticks([x*divisor+width/2 for x in (range(11 + (len(days) % 10) // divisor) if (len(days) > 10) else range(len(days)))])
+ax.set_xticklabels(days[::divisor] + (days[-1 + (((len(days) % 10) // divisor) if (len(days)) > 10 else 0):]))
 ax.legend()
 print("Saving...")
 name = your_name + '_' + their_name + '_monthly' + '.png'

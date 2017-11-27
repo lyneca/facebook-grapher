@@ -30,6 +30,13 @@ j = json.loads(x[:x.index('{\n   ') - 1])
 other_id = j['o0']['data']['message_thread']['thread_key']['other_user_id']
 j = j['o0']['data']['message_thread']
 messages = j['messages']['nodes']
+#  date = datetime(2017, 4, 22)
+#  out = open('out.txt', 'x')
+#  for message in messages:
+    #  if datetime.fromtimestamp(int(message['timestamp_precise'])/1000).date() == date.date():
+        #  if 'message' in message:
+            #  out.write(message['message']['text'] + '\n')
+#  out.close()
 
 other = [x for x in messages if x['message_sender']['id'] == other_id]
 you   = [x for x in messages if x['message_sender']['id'] != other_id]
@@ -46,6 +53,7 @@ other_counts = [_other_days.count(x) for x in days]
 
 _you_days  = ["{}-{}-{}".format(x.year, x.month, x.day) for x in you_times]
 you_counts = [_you_days.count(x) for x in days]
+print(days[you_counts.index(max(you_counts))])
 
 width = 0.35
 ind = np.arange(len(days))

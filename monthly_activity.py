@@ -46,6 +46,7 @@ other_counts = [_other_days.count(x) for x in days]
 
 _you_days = ["{}-{}".format(x.year, x.month) for x in you_times]
 you_counts = [_you_days.count(x) for x in days]
+print(days[you_counts.index(max(you_counts))])
 
 width = 0.35
 ind = np.arange(len(days))
